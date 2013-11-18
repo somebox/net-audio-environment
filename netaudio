@@ -1,0 +1,56 @@
+#!/usr/bin/env ruby 
+
+require 'bundler/setup'
+require "unimidi"
+require "midi"
+require "awesome_print"
+require 'thread'
+
+# prompt the user to select an input and output in the console...
+
+#@i = UniMIDI::Input.gets
+@o =  UniMIDI::Output.use(:first)
+
+#$stdin.sync = true
+#$stdout.sync = true
+# 01:38:53.648535 00:1f:5b:32:dc:24 (oui Unknown) > 90:84:0d:d3:0e:cc (oui Unknown), IPv4, length 1444: fozmac.51413 > host86-171-99-115.range86-171.btcentralplus.com.54294: UDP, length 1402
+DUMP_FORMAT = %r{length.*[\w\.\-]+\.(\w+) > [\w+\.\-]+\.(\w+)}
+
+while true
+  line = gets
+  #puts line
+  #$stdout.flush 
+
+  Thread.new do
+    MIDI.using(@o) do      
+      #octave 4
+      parts = line.scan(DUMP_FORMAT)
+      ports = parts ? parts.join(',') : ''
+      #puts ports
+      case 
+      when ports.match(/mdns|domain/)
+        play('C3', 0.15)
+      when ports.match(/jabber/)
+        play('F3', 0.15)
+      when ports.match(/http/)
+        play('A3', 0.15)
+      else
+        play('B3', 0.15)
+      end
+    end
+  end
+end
+
+# MIDI.using(@o) do
+
+#   5.times do |oct|
+#     octave oct
+#     %w{C E G B}.each { |n| 
+#       puts n
+#       play(n, 0.25) 
+#     }
+#   end
+
+# end
+
+
