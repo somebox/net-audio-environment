@@ -29,20 +29,21 @@ while true
   line = STDIN.readline '#!'
   ip, method, status = line.match(FORMAT).captures
   request = {ip: ip, method: method, status: status}
-  p request
+  p line
+  note = ('A'..'F').to_a[ip.split('.').last.to_i % 6]
   
   #$stdout.flush 
 
   Thread.new do
-    MIDI.using(@o) do      
+    MIDI.using(@o) do
       #octave 4
       case 
       when status =~ /20\d/
-        play('C3', 0.15)
+        play(note+'5', 0.10)
       when status =~ /30\d/
-        play('F3', 0.15)
+        play(note+'4', 0.10)
       when status =~ /40\d/
-        play('A3', 0.15)
+        play(note+'2', 0.40)
       else
         #play('B3', 0.15)
       end

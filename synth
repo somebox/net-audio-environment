@@ -1,2 +1,2 @@
 #!/usr/bin/env bash
-fluidsynth soundfonts/Chris_Percussion2.sf2
+fluidsynth soundfonts/filters.sf2

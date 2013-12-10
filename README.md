@@ -10,6 +10,10 @@ Clone repository, cd into project and
 
     bundle
 
+Install socat:
+
+    brew install socat
+
 on OSX, install [FluidSynth](http://sourceforge.net/apps/trac/fluidsynth/) via homebrew:
 
     brew install fluidsynth
@@ -32,7 +36,7 @@ Install [Midi Patchbay](http://notahat.com/midi_patchbay/). Then set up a patch 
 
 Now, try to make some noise:
 
-    sudo tcpdump -i en0 -e -q -U | ./netaudio
+    socat -t 0 - UDP4-RECV:51414,crlf |./netaudio
 
 ## TODO
 
