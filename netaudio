@@ -14,28 +14,37 @@ require 'thread'
 #$stdin.sync = true
 #$stdout.sync = true
 # 01:38:53.648535 00:1f:5b:32:dc:24 (oui Unknown) > 90:84:0d:d3:0e:cc (oui Unknown), IPv4, length 1444: fozmac.51413 > host86-171-99-115.range86-171.btcentralplus.com.54294: UDP, length 1402
-DUMP_FORMAT = %r{length.*[\w\.\-]+\.(\w+) > [\w+\.\-]+\.(\w+)}
+# DUMP_FORMAT = %r{length.*[\w\.\-]+\.(\w+) > [\w+\.\-]+\.(\w+)}
+  FORMAT = %r{zeus: ([\d\.]+) .* \"([A-Z]+) .*\" (\d+)}
+
+#begin
+
+  #IO.popen('/usr/bin/nc -u -k -l 51414',"r") do |io|
+  #  puts io.read
+  #end
+
+# socat -t 0 - UDP4-RECV:51414,crlf |./netaudio
 
 while true
-  line = gets
-  #puts line
+  line = STDIN.readline '#!'
+  ip, method, status = line.match(FORMAT).captures
+  request = {ip: ip, method: method, status: status}
+  p request
+  
   #$stdout.flush 
 
   Thread.new do
     MIDI.using(@o) do      
       #octave 4
-      parts = line.scan(DUMP_FORMAT)
-      ports = parts ? parts.join(',') : ''
-      #puts ports
       case 
-      when ports.match(/mdns|domain/)
+      when status =~ /20\d/
         play('C3', 0.15)
-      when ports.match(/jabber/)
+      when status =~ /30\d/
         play('F3', 0.15)
-      when ports.match(/http/)
+      when status =~ /40\d/
         play('A3', 0.15)
       else
-        play('B3', 0.15)
+        #play('B3', 0.15)
       end
     end
   end
