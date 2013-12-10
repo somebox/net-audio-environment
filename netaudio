@@ -27,23 +27,30 @@ require 'thread'
 
 while true
   line = STDIN.readline '#!'
-  ip, method, status = line.match(FORMAT).captures
+  ip, method, status = line.match(FORMAT).captures rescue ['','GET','200']
   request = {ip: ip, method: method, status: status}
   p line
-  note = ('A'..'F').to_a[ip.split('.').last.to_i % 6]
+  note = [36, 40, 43, 48, 52, 55, 60, 64, 67][ip.split('.').last.to_i % 4]+12
   
   #$stdout.flush 
+  if (rand*100).to_i == 0
+    offset = 2
+  else
+    offset = 0
+  end
 
   Thread.new do
     MIDI.using(@o) do
       #octave 4
       case 
       when status =~ /20\d/
-        play(note+'5', 0.10)
+        play(offset+note+12, 0.04)
       when status =~ /30\d/
-        play(note+'4', 0.10)
+        play(offset+note, 0.04)
       when status =~ /40\d/
-        play(note+'2', 0.40)
+        play(offset+note-12, 0.15)
+      when status =~ /50\d/
+        play(offset+note-24, 0.55)
       else
         #play('B3', 0.15)
       end
